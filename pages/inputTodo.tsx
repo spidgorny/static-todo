@@ -28,7 +28,7 @@ export function InputTodo(props: { onNew: (item: TodoItem) => void }) {
           <input
             type="text"
             name="title"
-            className="block w-full rounded-none p-1 focus:outline-none"
+            className="block w-full rounded-none px-1 focus:outline-none"
             placeholder="new todo"
             autoComplete={"no"}
             autoFocus={true}
