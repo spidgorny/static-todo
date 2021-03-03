@@ -52,6 +52,12 @@ export function RenderItems(props: {
     props.onChange(copy);
   };
 
+  const onDelete = (index: number) => {
+    const copy = props.todoItems;
+    copy.splice(index, 1);
+    props.onChange(copy);
+  };
+
   if (!winReady) {
     // https://github.com/atlassian/react-beautiful-dnd/issues/1756
     return (
@@ -62,6 +68,7 @@ export function RenderItems(props: {
             item={item}
             index={index}
             onChange={onDone}
+            onDelete={onDelete}
           />
         ))}
       </div>
@@ -86,6 +93,7 @@ export function RenderItems(props: {
                       index={index}
                       item={item}
                       onChange={onDone}
+                      onDelete={onDelete}
                     />
                   </div>
                 )}

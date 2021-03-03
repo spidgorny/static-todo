@@ -1,11 +1,13 @@
 import { TodoItem } from "./todoItem";
 import { Badge } from "./badge";
 import React, { useState } from "react";
+import { TodoDropDown } from "./todoDropDown";
 
 export function TodoRender(props: {
   index: number;
   item: TodoItem;
   onChange: (index: number, item: TodoItem) => void;
+  onDelete: (index: number) => void;
 }) {
   const [editable, setEditable] = useState(false);
   const [editTitle, setEditTitle] = useState(props.item.title);
@@ -68,6 +70,7 @@ export function TodoRender(props: {
               setEditable(false);
             }
           }}
+          onBlur={() => setEditable(false)}
           // onInput={(e: FormEvent) =>
           //   setEditTitle((e.target as HTMLInputElement).innerText)
         >
@@ -80,6 +83,12 @@ export function TodoRender(props: {
               {tag}
             </Badge>
           ))}
+      </div>
+      <div className="">
+        <TodoDropDown
+          item={props.item}
+          onDelete={() => props.onDelete(props.index)}
+        />
       </div>
     </div>
   );
