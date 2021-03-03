@@ -5,7 +5,8 @@ import { RenderItems } from "./renderItems";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import Spinner from "../components/spinner";
-import { DangerText } from "tailwind-react-ui";
+import { DangerText, FillButton } from "tailwind-react-ui";
+import { InputTodo } from "./inputTodo";
 
 export default function Home() {
   const { isLoading, error, data, refetch } = useQuery(
@@ -29,6 +30,12 @@ export default function Home() {
     }
   );
 
+  const onNew = (item: TodoItem) => {
+    // console.log(item);
+    data.unshift(item);
+    mutation.mutate(data);
+  };
+
   return (
     <div className="container mx-auto">
       <Head>
@@ -38,29 +45,22 @@ export default function Home() {
 
       <main>
         <h1>Stratos ToDos</h1>
-        <div className="col-span-3 sm:col-span-2 hidden">
-          <label
-            htmlFor="company_website"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Website
-          </label>
-          <div className="mt-1 flex rounded-md shadow-sm">
-            <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-              http://
-            </span>
-            <input
-              type="text"
-              name="company_website"
-              id="company_website"
-              className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-r-md sm:text-sm border-gray-300"
-              placeholder="www.example.com"
-            />
-          </div>
-        </div>
+        {data && <InputTodo onNew={onNew} />}
         {isLoading && <Spinner />}
         {error && <DangerText>{error}</DangerText>}
         {data && <RenderItems todoItems={data} onChange={mutation.mutate} />}
+        {data && (
+          <div className="clear-both">
+            <FillButton
+              className="float-right"
+              bg="blue-300"
+              onClick={() => mutation.mutate(data)}
+              m={2}
+            >
+              Save
+            </FillButton>
+          </div>
+        )}
       </main>
 
       <footer className="border-t">&copy; 2021 AppDev</footer>

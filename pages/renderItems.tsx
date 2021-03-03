@@ -31,14 +31,25 @@ export function RenderItems(props: {
       return;
     }
 
+    // didn't move
+    if (result.source.index === result.destination.index) {
+      return;
+    }
+
     const newTodos = reorder(
       props.todoItems,
       result.source.index,
       result.destination.index
     );
-    console.log(newTodos.map((x) => x.title));
+    // console.log(newTodos.map((x) => x.title));
 
     props.onChange(newTodos);
+  };
+
+  const onDone = (index: number, item: TodoItem) => {
+    const copy = props.todoItems;
+    copy[index] = item;
+    props.onChange(copy);
   };
 
   if (!winReady) {
@@ -46,7 +57,12 @@ export function RenderItems(props: {
     return (
       <div>
         {props.todoItems.map((item: TodoItem, index: number) => (
-          <TodoRender key={item.title} item={item} />
+          <TodoRender
+            key={item.id}
+            item={item}
+            index={index}
+            onChange={onDone}
+          />
         ))}
       </div>
     );
@@ -58,18 +74,19 @@ export function RenderItems(props: {
         {(provided, snapshot) => (
           <div {...provided.droppableProps} ref={provided.innerRef}>
             {props.todoItems.map((item: TodoItem, index: number) => (
-              <Draggable
-                key={item.title}
-                draggableId={item.title}
-                index={index}
-              >
+              <Draggable key={item.id} draggableId={item.id} index={index}>
                 {(provided, snapshot) => (
                   <div
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                   >
-                    <TodoRender key={item.title} item={item} />
+                    <TodoRender
+                      key={item.id}
+                      index={index}
+                      item={item}
+                      onChange={onDone}
+                    />
                   </div>
                 )}
               </Draggable>
