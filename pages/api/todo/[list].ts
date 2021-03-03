@@ -7,6 +7,7 @@ function saveTodos(list: string, todos: TodoItem[]) {
   const json = JSON.stringify(todos, null, 2);
   const file = path.resolve(process.cwd(), "data/" + list + ".json");
   fs.writeFileSync(file, json);
+  return file;
 }
 
 function loadTodos(list: string): TodoItem[] {
@@ -31,10 +32,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
 function post(req: NextApiRequest, res: NextApiResponse, list: string) {
   const todos = req.body;
-  saveTodos(list, todos);
+  const file = saveTodos(list, todos);
 
   res.json({
     status: "ok",
     length: todos.length,
+    file,
+    todos,
   });
 }

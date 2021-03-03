@@ -2,17 +2,32 @@ import Head from "next/head";
 import { TodoItem } from "./todoItem";
 import React from "react";
 import { RenderItems } from "./renderItems";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import Spinner from "../components/spinner";
 import { DangerText } from "tailwind-react-ui";
 
 export default function Home() {
-  const { isLoading, error, data } = useQuery(["todo", "default"], async () => {
-    const res = await axios.get("/api/todo/default");
-    console.log(res.status, res.data);
-    return res.data.map((el) => new TodoItem(el.title, el));
-  });
+  const { isLoading, error, data, refetch } = useQuery(
+    ["todo", "default"],
+    async () => {
+      const res = await axios.get("/api/todo/default");
+      console.log(res.status, res.data);
+      return res.data.map((el) => new TodoItem(el.title, el));
+    }
+  );
+
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation(
+    (todos: TodoItem[]) => axios.post("/api/todo/default", todos),
+    {
+      onSuccess: async (data, variables, context) => {
+        await queryClient.invalidateQueries(["/todo", "default"]);
+        await refetch();
+      },
+    }
+  );
 
   return (
     <div className="container mx-auto">
@@ -45,7 +60,7 @@ export default function Home() {
         </div>
         {isLoading && <Spinner />}
         {error && <DangerText>{error}</DangerText>}
-        {data && <RenderItems todoItems={data} />}
+        {data && <RenderItems todoItems={data} onChange={mutation.mutate} />}
       </main>
 
       <footer className="border-t">&copy; 2021 AppDev</footer>

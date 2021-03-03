@@ -8,7 +8,18 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 
-export function RenderItems(props: { todoItems: TodoItem[] }) {
+const reorder = (list: TodoItem[], startIndex: number, endIndex: number) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return result;
+};
+
+export function RenderItems(props: {
+  todoItems: TodoItem[];
+  onChange: (todos: TodoItem[]) => void;
+}) {
   const [winReady, setWinReady] = useState(false);
   useEffect(() => {
     setWinReady(true);
@@ -20,9 +31,14 @@ export function RenderItems(props: { todoItems: TodoItem[] }) {
       return;
     }
 
-    // this.setState({
-    //   items,
-    // });
+    const newTodos = reorder(
+      props.todoItems,
+      result.source.index,
+      result.destination.index
+    );
+    console.log(newTodos.map((x) => x.title));
+
+    props.onChange(newTodos);
   };
 
   if (!winReady) {
