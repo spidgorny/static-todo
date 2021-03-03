@@ -1,41 +1,28 @@
 import Head from "next/head";
 import { TodoItem } from "./todoItem";
-import { TodoRender } from "./todoRender";
+import React from "react";
+import { RenderItems } from "./renderItems";
+import { useQuery } from "react-query";
+import axios from "axios";
+import Spinner from "../components/spinner";
+import { DangerText } from "tailwind-react-ui";
 
 export default function Home() {
-  const todo = [
-    new TodoItem("implement ShippingController", {
-      tags: ["api"],
-    }),
-    new TodoItem("implement ReportController", {
-      tags: ["api"],
-    }),
-    new TodoItem(
-      "set up the backend routes to have more communication between frontend and backend",
-      {
-        status: "",
-        tags: ["api"],
-      }
-    ),
-    new TodoItem("Deploy to the test server", {
-      status: "Blocked by Debian install",
-      tags: ["hosting"],
-    }),
-    new TodoItem("Create react app with dummy data on localhost", {
-      done: true,
-      tags: ["react"],
-    }),
-  ];
+  const { isLoading, error, data } = useQuery(["todo", "default"], async () => {
+    const res = await axios.get("/api/todo/default");
+    console.log(res.status, res.data);
+    return res.data.map((el) => new TodoItem(el.title, el));
+  });
 
   return (
     <div className="container mx-auto">
       <Head>
-        <title>Create Next App</title>
+        <title>Stratos ToDos</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main>
-        <h1>ToDo Stratos</h1>
+        <h1>Stratos ToDos</h1>
         <div className="col-span-3 sm:col-span-2 hidden">
           <label
             htmlFor="company_website"
@@ -56,11 +43,9 @@ export default function Home() {
             />
           </div>
         </div>
-        <div>
-          {todo.map((item) => (
-            <TodoRender key={item.title} item={item} />
-          ))}
-        </div>
+        {isLoading && <Spinner />}
+        {error && <DangerText>{error}</DangerText>}
+        {data && <RenderItems todoItems={data} />}
       </main>
 
       <footer className="border-t">&copy; 2021 AppDev</footer>

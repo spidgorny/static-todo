@@ -9,6 +9,7 @@ export function TodoRender(props: { item: TodoItem }) {
           type="checkbox"
           disabled={!props.item.done}
           checked={props.item.done}
+          readOnly={props.item.done}
           className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
         />
       </div>
